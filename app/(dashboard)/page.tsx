@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Header from "@/components/dashboard/Header";
 import StatsCard from "@/components/dashboard/StatsCard";
@@ -35,18 +35,23 @@ export default function Home() {
     interviews: 0,
   });
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  async function loadStats() {
+  const loadStats = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return;
+    if (!user) {
+      setStats({
+        tasks: 0,
+        events: 0,
+        shopping: 0,
+        interviews: 0,
+      });
 
-    const { count: tasksCount } = await supabase
+      return;
+    }
+
+    const { count: tasksCount, error: tasksError } = await supabase
       .from("tasks")
       .select("*", {
         count: "exact",
@@ -54,7 +59,7 @@ export default function Home() {
       })
       .eq("user_id", user.id);
 
-    const { count: eventsCount } = await supabase
+    const { count: eventsCount, error: eventsError } = await supabase
       .from("events")
       .select("*", {
         count: "exact",
@@ -62,7 +67,7 @@ export default function Home() {
       })
       .eq("user_id", user.id);
 
-    const { count: shoppingCount } = await supabase
+    const { count: shoppingCount, error: shoppingError } = await supabase
       .from("shopping_items")
       .select("*", {
         count: "exact",
@@ -70,7 +75,7 @@ export default function Home() {
       })
       .eq("user_id", user.id);
 
-    const { count: interviewsCount } = await supabase
+    const { count: interviewsCount, error: interviewsError } = await supabase
       .from("interviews")
       .select("*", {
         count: "exact",
@@ -78,42 +83,51 @@ export default function Home() {
       })
       .eq("user_id", user.id);
 
+    if (tasksError) {
+      console.error("Error loading tasks count:", tasksError);
+    }
+
+    if (eventsError) {
+      console.error("Error loading events count:", eventsError);
+    }
+
+    if (shoppingError) {
+      console.error("Error loading shopping count:", shoppingError);
+    }
+
+    if (interviewsError) {
+      console.error("Error loading interviews count:", interviewsError);
+    }
+
     setStats({
       tasks: tasksCount ?? 0,
       events: eventsCount ?? 0,
       shopping: shoppingCount ?? 0,
       interviews: interviewsCount ?? 0,
     });
-  }
+  }, []);
+
+  // Load stats when the dashboard opens
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  // Reload stats when returning to the dashboard
+  useEffect(() => {
+    const handleFocus = () => {
+      loadStats();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [loadStats]);
 
   return (
-    <main
-      className="
-        relative
-        min-h-screen
-        overflow-hidden
-        bg-slate-50
-        transition-colors
-        duration-500
-        dark:bg-slate-950
-      "
-    >
+    <main className="relative min-h-screen">
       {/* Background glow - Light mode */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -left-32
-          -top-32
-          h-72
-          w-72
-          rounded-full
-          bg-indigo-300/20
-          blur-3xl
-          dark:bg-indigo-500/10
-        "
-      />
-
       <div
         className="
           pointer-events-none
@@ -145,7 +159,6 @@ export default function Home() {
       />
 
       <div className="relative z-10 space-y-6">
-
         {/* Header */}
         <div
           className="
@@ -160,7 +173,6 @@ export default function Home() {
             duration-500
             sm:p-5
             lg:p-6
-
             dark:border-white/10
             dark:bg-slate-900/60
             dark:shadow-black/20
@@ -237,7 +249,6 @@ export default function Home() {
               duration-300
               hover:shadow-lg
               sm:p-5
-
               dark:border-white/10
               dark:bg-slate-900/60
               dark:shadow-black/20
@@ -262,7 +273,6 @@ export default function Home() {
               duration-300
               hover:shadow-lg
               sm:p-5
-
               dark:border-white/10
               dark:bg-slate-900/60
               dark:shadow-black/20
@@ -285,7 +295,6 @@ export default function Home() {
               duration-300
               hover:shadow-lg
               sm:p-5
-
               dark:border-white/10
               dark:bg-slate-900/60
               dark:shadow-black/20
@@ -308,7 +317,6 @@ export default function Home() {
               duration-300
               hover:shadow-lg
               sm:p-5
-
               dark:border-white/10
               dark:bg-slate-900/60
               dark:shadow-black/20
@@ -332,7 +340,6 @@ export default function Home() {
               hover:shadow-lg
               sm:p-5
               lg:col-span-2
-
               dark:border-white/10
               dark:bg-slate-900/60
               dark:shadow-black/20
@@ -341,7 +348,6 @@ export default function Home() {
             <RecentNotes />
           </div>
         </section>
-
       </div>
 
       {/* Modals */}

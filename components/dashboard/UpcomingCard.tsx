@@ -1,118 +1,245 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/lib/supabase";
+
+type Interview = {
+  id: string;
+  user_id: string;
+  company?: string;
+  position?: string;
+  interview_date?: string;
+  date?: string;
+  title?: string;
+  created_at?: string;
+};
 
 export default function UpcomingCard() {
-
-
   const { t } = useLanguage();
 
+  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  async function loadInterviews() {
+    setLoading(true);
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error("Error getting user:", userError);
+      setInterviews([]);
+      setLoading(false);
+      return;
+    }
+
+    if (!user) {
+      setInterviews([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("interviews")
+      .select("*")
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error loading interviews:", error);
+      console.error("Supabase error details:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code,
+      });
+
+      setInterviews([]);
+      setLoading(false);
+      return;
+    }
+
+    const now = new Date();
+
+    const upcomingInterviews = (data ?? [])
+      .filter((interview) => {
+        const dateValue =
+          interview.interview_date || interview.date;
+
+        if (!dateValue) {
+          return false;
+        }
+
+        const interviewDate = new Date(dateValue);
+
+        return interviewDate > now;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(
+          a.interview_date || a.date || ""
+        ).getTime();
+
+        const dateB = new Date(
+          b.interview_date || b.date || ""
+        ).getTime();
+
+        return dateA - dateB;
+      })
+      .slice(0, 3);
+
+    setInterviews(upcomingInterviews);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadInterviews();
+
+    const handleFocus = () => {
+      loadInterviews();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   return (
-
     <section
       className="
-      rounded-2xl
-      border
-      border-slate-200
-      bg-white
-      p-5
-      shadow-sm
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        p-5
+        shadow-sm
+        dark:border-white/10
+        dark:bg-slate-900
       "
     >
-
-
-
       <div className="mb-4 flex items-center gap-2">
-
-
         <CalendarDays
           size={18}
           className="text-purple-500"
         />
 
-
         <div>
-
-
-          <h2 className="
-          text-lg
-          font-semibold
-          text-slate-900
-          ">
-
+          <h2
+            className="
+              text-lg
+              font-semibold
+              text-slate-900
+              dark:text-white
+            "
+          >
             {t("upcoming")}
-
           </h2>
 
-
-
-          <p className="
-          text-sm
-          text-slate-500
-          ">
-
+          <p
+            className="
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             {t("yourNextItems")}
-
           </p>
-
-
         </div>
-
-
       </div>
-
-
-
-
-
 
       <div className="space-y-3">
+        {loading ? (
+          <div
+            className="
+              rounded-lg
+              bg-slate-50
+              p-3
+              text-sm
+              text-slate-500
+              dark:bg-slate-800
+              dark:text-slate-400
+            "
+          >
+            Loading...
+          </div>
+        ) : interviews.length === 0 ? (
+          <div
+            className="
+              rounded-lg
+              bg-slate-50
+              p-3
+              text-sm
+              text-slate-500
+              dark:bg-slate-800
+              dark:text-slate-400
+            "
+          >
+            No upcoming interviews.
+          </div>
+        ) : (
+          interviews.map((interview) => {
+            const dateValue =
+              interview.interview_date ||
+              interview.date ||
+              "";
 
+            const formattedDate = new Date(
+              dateValue
+            ).toLocaleDateString();
 
-        <div
-          className="
-          rounded-lg
-          bg-slate-50
-          p-3
-          "
-        >
+            return (
+              <div
+                key={interview.id}
+                className="
+                  rounded-lg
+                  bg-slate-50
+                  p-3
+                  dark:bg-slate-800
+                "
+              >
+                <p
+                  className="
+                    text-sm
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
+                  {formattedDate}
+                </p>
 
+                <p
+                  className="
+                    font-medium
+                    text-slate-900
+                    dark:text-white
+                  "
+                >
+                  {interview.position ||
+                    interview.title ||
+                    t("interview")}
+                </p>
 
-          <p className="text-sm text-slate-500">
-
-            2026-08-07
-
-          </p>
-
-
-
-          <p className="
-          font-medium
-          text-slate-900
-          ">
-
-            {t("interview")}
-
-          </p>
-
-
-
-        </div>
-
-
-
+                {interview.company && (
+                  <p
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    {interview.company}
+                  </p>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
-
-
-
-
-
     </section>
-
   );
-
 }

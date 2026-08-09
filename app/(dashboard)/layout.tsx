@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import Sidebar from "@/components/Sidebar";
@@ -13,10 +13,25 @@ export default function DashboardLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Apply saved theme.
+  // Dark mode is the default.
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+
+      if (!savedTheme) {
+        localStorage.setItem("theme", "dark");
+      }
+    }
+  }, []);
+
   return (
     <AuthGuard>
-      <div className="flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950">
-
+      <div className="flex min-h-screen">
         {/* ================= DESKTOP SIDEBAR ================= */}
 
         <aside className="hidden lg:block">
@@ -69,6 +84,7 @@ export default function DashboardLayout({
           `}
         >
           {/* Mobile sidebar header */}
+
           <div
             className="
               flex
@@ -82,7 +98,14 @@ export default function DashboardLayout({
               dark:border-slate-700
             "
           >
-            <span className="text-lg font-semibold text-slate-900 dark:text-white">
+            <span
+              className="
+                text-lg
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Organizer
             </span>
 
@@ -110,6 +133,7 @@ export default function DashboardLayout({
           </div>
 
           {/* Scrollable sidebar content */}
+
           <div
             className="
               min-h-0
@@ -140,6 +164,7 @@ export default function DashboardLayout({
           "
         >
           {/* Mobile top bar */}
+
           <header
             className="
               sticky
@@ -181,13 +206,22 @@ export default function DashboardLayout({
             </button>
 
             <div className="ml-3 min-w-0">
-              <p className="truncate text-base font-semibold text-slate-900 dark:text-white">
+              <p
+                className="
+                  truncate
+                  text-base
+                  font-semibold
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 Organizer
               </p>
             </div>
           </header>
 
           {/* Page content */}
+
           <div
             className="
               w-full

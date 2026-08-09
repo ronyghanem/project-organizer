@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
-  const [darkMode, setDarkMode] =
-    useState(true);
+  const [darkMode, setDarkMode] = useState(true);
 
   const [
     notificationsLoading,
@@ -37,38 +36,44 @@ export default function SettingsPage() {
   } = useLanguage();
 
   useEffect(() => {
+    // -----------------------------
+    // Restore theme
+    // -----------------------------
+
     const savedTheme =
       localStorage.getItem("theme");
 
-    const savedLanguage =
-      localStorage.getItem("language");
+    // Dark mode is the default
+    const shouldUseDarkMode =
+      savedTheme !== "light";
 
-    // Dark mode by default
-    if (
-      savedTheme === null ||
-      savedTheme === "dark"
-    ) {
-      setDarkMode(true);
+    setDarkMode(shouldUseDarkMode);
 
+    if (shouldUseDarkMode) {
       document.documentElement.classList.add(
         "dark"
       );
 
-      if (savedTheme === null) {
+      // Save dark as the default preference
+      if (!savedTheme) {
         localStorage.setItem(
           "theme",
           "dark"
         );
       }
     } else {
-      setDarkMode(false);
-
       document.documentElement.classList.remove(
         "dark"
       );
     }
 
+    // -----------------------------
     // Restore language
+    // -----------------------------
+
+    const savedLanguage =
+      localStorage.getItem("language");
+
     if (
       savedLanguage === "English" ||
       savedLanguage === "Arabic" ||
@@ -77,25 +82,21 @@ export default function SettingsPage() {
       setLanguage(savedLanguage);
     }
 
-    // Check browser notification permission
+    // -----------------------------
+    // Check notifications
+    // -----------------------------
+
     if (
-      typeof window !== "undefined" &&
-      "Notification" in window
+      "Notification" in window &&
+      Notification.permission === "granted"
     ) {
-      if (
-        Notification.permission ===
-        "granted"
-      ) {
-        checkPushSubscription();
-      }
+      checkPushSubscription();
     }
   }, [setLanguage]);
 
   async function checkPushSubscription() {
     try {
-      if (
-        !("serviceWorker" in navigator)
-      ) {
+      if (!("serviceWorker" in navigator)) {
         return;
       }
 
@@ -117,11 +118,11 @@ export default function SettingsPage() {
   }
 
   function toggleTheme() {
-    const value = !darkMode;
+    const newDarkMode = !darkMode;
 
-    setDarkMode(value);
+    setDarkMode(newDarkMode);
 
-    if (value) {
+    if (newDarkMode) {
       document.documentElement.classList.add(
         "dark"
       );
@@ -213,33 +214,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <main
-      className="
-        relative
-        min-h-screen
-        space-y-6
-        overflow-hidden
-        bg-slate-50
-        transition-colors
-        duration-500
-        dark:bg-slate-950
-      "
-    >
+    <main className="relative min-h-screen">
       {/* Background glow */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -left-32
-          -top-32
-          h-72
-          w-72
-          rounded-full
-          bg-indigo-300/20
-          blur-3xl
-          dark:bg-indigo-500/10
-        "
-      />
 
       <div
         className="
@@ -259,6 +235,7 @@ export default function SettingsPage() {
       <div className="relative z-10 space-y-6">
 
         {/* Header */}
+
         <div
           className="
             rounded-3xl
@@ -298,6 +275,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Notifications */}
+
         <div
           className="
             rounded-3xl
@@ -373,16 +351,13 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Notification button */}
           <button
             onClick={
               notificationsEnabled
                 ? handleDisableNotifications
                 : handleEnableNotifications
             }
-            disabled={
-              notificationsLoading
-            }
+            disabled={notificationsLoading}
             className="
               mt-5
               flex
@@ -444,7 +419,6 @@ export default function SettingsPage() {
             )}
           </button>
 
-          {/* Notification message */}
           {notificationMessage && (
             <div
               className="
@@ -468,6 +442,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Appearance */}
+
         <div
           className="
             rounded-3xl
@@ -576,6 +551,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Language */}
+
         <div
           className="
             rounded-3xl
