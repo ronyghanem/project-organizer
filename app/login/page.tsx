@@ -291,7 +291,7 @@ export default function LoginPage() {
             <div className="mt-7 text-center text-sm text-slate-400">
               Don't have an account?{" "}
               <Link
-                href="/register"
+                href="/signup"
                 className="font-medium text-violet-300 transition hover:text-violet-200"
               >
                 Create an account
