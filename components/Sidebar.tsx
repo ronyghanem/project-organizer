@@ -117,13 +117,13 @@ export default function Sidebar() {
         flex-col
         border-r
         border-white/50
-        bg-white/70
+        bg-white/75
         p-4
         shadow-xl
         backdrop-blur-2xl
 
         dark:border-white/10
-        dark:bg-slate-950/75
+        dark:bg-[#08081a]/70
       "
     >
       {/* Background glow */}
@@ -138,6 +138,8 @@ export default function Sidebar() {
           rounded-full
           bg-indigo-400/20
           blur-3xl
+          animate-glow-pulse
+          dark:bg-violet-500/20
         "
       />
 
@@ -152,6 +154,8 @@ export default function Sidebar() {
           rounded-full
           bg-purple-400/10
           blur-3xl
+          animate-float-slow
+          dark:bg-fuchsia-500/10
         "
       />
 
@@ -174,6 +178,7 @@ export default function Sidebar() {
         >
           <div
             className="
+              relative
               flex
               h-10
               w-10
@@ -190,7 +195,8 @@ export default function Sidebar() {
               shadow-indigo-500/25
             "
           >
-            <Sparkles size={19} />
+            <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-60 blur-md animate-glow-pulse" />
+            <Sparkles size={19} className="relative animate-spin-slow" />
           </div>
 
           <div className="min-w-0">
@@ -371,13 +377,13 @@ export default function Sidebar() {
           rounded-2xl
           border
           border-white/60
-          bg-white/75
+          bg-white/80
           p-3
           shadow-lg
           backdrop-blur-xl
 
           dark:border-white/10
-          dark:bg-slate-900/80
+          dark:bg-white/[0.07]
         "
       >
         <div className="mb-3 flex items-center gap-3">
@@ -398,7 +404,7 @@ export default function Sidebar() {
                 border-white
                 object-cover
                 shadow-md
-                dark:border-slate-700
+                dark:border-white/10
               "
             />
 

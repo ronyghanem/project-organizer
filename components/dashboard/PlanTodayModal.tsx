@@ -193,7 +193,7 @@ export default function PlanTodayModal({
           rounded-3xl
           border
           border-white/30
-          bg-white/80
+          bg-white/90
           shadow-2xl
           backdrop-blur-2xl
           dark:border-white/10
@@ -340,7 +340,7 @@ export default function PlanTodayModal({
                 px-6
                 py-14
                 text-center
-                dark:border-slate-700
+                dark:border-white/10
               "
             >
               <div

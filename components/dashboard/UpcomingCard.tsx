@@ -119,7 +119,7 @@ export default function UpcomingCard() {
         p-5
         shadow-sm
         dark:border-white/10
-        dark:bg-slate-900
+        dark:bg-[#0b0b1f]
       "
     >
       <div className="mb-4 flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function UpcomingCard() {
           <div
             className="
               rounded-lg
-              bg-slate-50
+              bg-transparent
               p-3
               text-sm
               text-slate-500
@@ -171,7 +171,7 @@ export default function UpcomingCard() {
           <div
             className="
               rounded-lg
-              bg-slate-50
+              bg-transparent
               p-3
               text-sm
               text-slate-500
@@ -197,7 +197,7 @@ export default function UpcomingCard() {
                 key={interview.id}
                 className="
                   rounded-lg
-                  bg-slate-50
+                  bg-transparent
                   p-3
                   dark:bg-slate-800
                 "

@@ -161,8 +161,8 @@ export default function InterviewsPage() {
           p-4
           shadow-sm
           sm:p-6
-          dark:border-slate-700
-          dark:bg-slate-900
+          dark:border-white/10
+          dark:bg-[#0b0b1f]
         "
       >
         <div className="space-y-4">
@@ -201,7 +201,7 @@ export default function InterviewsPage() {
                 focus:border-indigo-500
                 focus:ring-4
                 focus:ring-indigo-50
-                dark:border-slate-700
+                dark:border-white/10
                 dark:bg-slate-800
                 dark:text-white
               "
@@ -242,7 +242,7 @@ export default function InterviewsPage() {
                 focus:border-indigo-500
                 focus:ring-4
                 focus:ring-indigo-50
-                dark:border-slate-700
+                dark:border-white/10
                 dark:bg-slate-800
                 dark:text-white
               "
@@ -281,7 +281,7 @@ export default function InterviewsPage() {
                 focus:border-indigo-500
                 focus:ring-4
                 focus:ring-indigo-50
-                dark:border-slate-700
+                dark:border-white/10
                 dark:bg-slate-800
                 dark:text-white
               "
@@ -330,7 +330,7 @@ export default function InterviewsPage() {
                   focus:border-indigo-500
                   focus:ring-4
                   focus:ring-indigo-50
-                  dark:border-slate-700
+                  dark:border-white/10
                   dark:bg-slate-800
                   dark:text-white
                 "
@@ -369,7 +369,7 @@ export default function InterviewsPage() {
                   focus:border-indigo-500
                   focus:ring-4
                   focus:ring-indigo-50
-                  dark:border-slate-700
+                  dark:border-white/10
                   dark:bg-slate-800
                   dark:text-white
                 "
@@ -413,7 +413,7 @@ export default function InterviewsPage() {
                 focus:border-indigo-500
                 focus:ring-4
                 focus:ring-indigo-50
-                dark:border-slate-700
+                dark:border-white/10
                 dark:bg-slate-800
                 dark:text-white
               "
@@ -464,8 +464,8 @@ export default function InterviewsPage() {
               border-slate-200
               bg-white
               p-5
-              dark:border-slate-700
-              dark:bg-slate-900
+              dark:border-white/10
+              dark:bg-[#0b0b1f]
             "
           >
             <p className="text-sm text-slate-500">
@@ -486,8 +486,8 @@ export default function InterviewsPage() {
               px-4
               py-10
               text-center
-              dark:border-slate-700
-              dark:bg-slate-900
+              dark:border-white/10
+              dark:bg-[#0b0b1f]
             "
           >
             <p className="text-sm text-slate-500">
@@ -531,8 +531,8 @@ export default function InterviewsPage() {
                     : `
                       border-slate-200
                       bg-white
-                      dark:border-slate-700
-                      dark:bg-slate-900
+                      dark:border-white/10
+                      dark:bg-[#0b0b1f]
                     `
                 }
               `}

@@ -266,7 +266,7 @@ export default function ShoppingPreview(){
             flex
             justify-between
             rounded-lg
-            bg-slate-50
+            bg-transparent
             px-3
             py-2
             "

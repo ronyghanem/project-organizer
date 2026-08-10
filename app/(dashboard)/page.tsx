@@ -165,7 +165,7 @@ export default function Home() {
             rounded-3xl
             border
             border-white/60
-            bg-white/65
+            bg-white/70
             p-4
             shadow-sm
             backdrop-blur-xl
@@ -174,7 +174,7 @@ export default function Home() {
             sm:p-5
             lg:p-6
             dark:border-white/10
-            dark:bg-slate-900/60
+            dark:bg-white/[0.05]
             dark:shadow-black/20
           "
         >
@@ -241,7 +241,7 @@ export default function Home() {
               rounded-3xl
               border
               border-white/60
-              bg-white/65
+              bg-white/70
               p-4
               shadow-sm
               backdrop-blur-xl
@@ -250,7 +250,7 @@ export default function Home() {
               hover:shadow-lg
               sm:p-5
               dark:border-white/10
-              dark:bg-slate-900/60
+              dark:bg-white/[0.05]
               dark:shadow-black/20
             "
           >
@@ -265,7 +265,7 @@ export default function Home() {
               rounded-3xl
               border
               border-white/60
-              bg-white/65
+              bg-white/70
               p-4
               shadow-sm
               backdrop-blur-xl
@@ -274,7 +274,7 @@ export default function Home() {
               hover:shadow-lg
               sm:p-5
               dark:border-white/10
-              dark:bg-slate-900/60
+              dark:bg-white/[0.05]
               dark:shadow-black/20
             "
           >
@@ -287,7 +287,7 @@ export default function Home() {
               rounded-3xl
               border
               border-white/60
-              bg-white/65
+              bg-white/70
               p-4
               shadow-sm
               backdrop-blur-xl
@@ -296,7 +296,7 @@ export default function Home() {
               hover:shadow-lg
               sm:p-5
               dark:border-white/10
-              dark:bg-slate-900/60
+              dark:bg-white/[0.05]
               dark:shadow-black/20
             "
           >
@@ -309,7 +309,7 @@ export default function Home() {
               rounded-3xl
               border
               border-white/60
-              bg-white/65
+              bg-white/70
               p-4
               shadow-sm
               backdrop-blur-xl
@@ -318,7 +318,7 @@ export default function Home() {
               hover:shadow-lg
               sm:p-5
               dark:border-white/10
-              dark:bg-slate-900/60
+              dark:bg-white/[0.05]
               dark:shadow-black/20
             "
           >
@@ -331,7 +331,7 @@ export default function Home() {
               rounded-3xl
               border
               border-white/60
-              bg-white/65
+              bg-white/70
               p-4
               shadow-sm
               backdrop-blur-xl
@@ -341,7 +341,7 @@ export default function Home() {
               sm:p-5
               lg:col-span-2
               dark:border-white/10
-              dark:bg-slate-900/60
+              dark:bg-white/[0.05]
               dark:shadow-black/20
             "
           >

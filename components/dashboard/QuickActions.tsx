@@ -110,7 +110,7 @@ export default function QuickActions({
           items-center
           gap-3
           rounded-xl
-          bg-slate-50
+          bg-transparent
           p-4
           text-left
           hover:bg-slate-100
@@ -175,7 +175,7 @@ export default function QuickActions({
           items-center
           gap-3
           rounded-xl
-          bg-slate-50
+          bg-transparent
           p-4
           text-left
           hover:bg-slate-100
@@ -244,7 +244,7 @@ export default function QuickActions({
           items-center
           gap-3
           rounded-xl
-          bg-slate-50
+          bg-transparent
           p-4
           text-left
           hover:bg-slate-100

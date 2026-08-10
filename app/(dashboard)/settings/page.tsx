@@ -241,7 +241,7 @@ export default function SettingsPage() {
             rounded-3xl
             border
             border-slate-200/70
-            bg-white/70
+            bg-white/75
             p-5
             shadow-sm
             backdrop-blur-xl
@@ -281,7 +281,7 @@ export default function SettingsPage() {
             rounded-3xl
             border
             border-slate-200/70
-            bg-white/70
+            bg-white/75
             p-5
             shadow-sm
             backdrop-blur-xl
@@ -448,7 +448,7 @@ export default function SettingsPage() {
             rounded-3xl
             border
             border-slate-200/70
-            bg-white/70
+            bg-white/75
             p-5
             shadow-sm
             backdrop-blur-xl
@@ -557,7 +557,7 @@ export default function SettingsPage() {
             rounded-3xl
             border
             border-slate-200/70
-            bg-white/70
+            bg-white/75
             p-5
             shadow-sm
             backdrop-blur-xl

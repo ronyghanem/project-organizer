@@ -74,7 +74,7 @@ export default function DashboardLayout({
             transition-transform
             duration-300
             ease-in-out
-            dark:bg-slate-900
+            dark:bg-[#0b0b1f]
             lg:hidden
             ${
               sidebarOpen
@@ -95,7 +95,7 @@ export default function DashboardLayout({
               border-b
               border-slate-200
               px-4
-              dark:border-slate-700
+              dark:border-white/10
             "
           >
             <span
@@ -159,8 +159,8 @@ export default function DashboardLayout({
           className="
             min-w-0
             flex-1
-            bg-slate-50
-            dark:bg-slate-950
+            bg-transparent
+            dark:bg-transparent
           "
         >
           {/* Mobile top bar */}
@@ -175,11 +175,11 @@ export default function DashboardLayout({
               items-center
               border-b
               border-slate-200
-              bg-white/95
+              bg-white/90
               px-4
               backdrop-blur
-              dark:border-slate-800
-              dark:bg-slate-950/95
+              dark:border-white/10
+              dark:bg-[#08081a]/80
               lg:hidden
             "
           >
@@ -224,6 +224,7 @@ export default function DashboardLayout({
 
           <div
             className="
+              animate-fade-in-up
               w-full
               min-w-0
               p-4

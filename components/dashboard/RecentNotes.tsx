@@ -274,7 +274,7 @@ export default function RecentNotes(){
 
             className="
             rounded-lg
-            bg-slate-50
+            bg-transparent
             p-3
             "
 

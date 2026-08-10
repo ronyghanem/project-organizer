@@ -136,8 +136,8 @@ export default function ShoppingPage() {
           p-4
           shadow-sm
           sm:p-5
-          dark:border-slate-700
-          dark:bg-slate-900
+          dark:border-white/10
+          dark:bg-[#0b0b1f]
         "
       >
         <div
@@ -175,7 +175,7 @@ export default function ShoppingPage() {
               focus:border-indigo-500
               focus:ring-4
               focus:ring-indigo-50
-              dark:border-slate-700
+              dark:border-white/10
               dark:bg-slate-800
               dark:text-white
             "
@@ -224,8 +224,8 @@ export default function ShoppingPage() {
               border-slate-200
               bg-white
               p-4
-              dark:border-slate-700
-              dark:bg-slate-900
+              dark:border-white/10
+              dark:bg-[#0b0b1f]
             "
           >
             <p className="text-sm text-slate-500">
@@ -246,8 +246,8 @@ export default function ShoppingPage() {
               px-4
               py-10
               text-center
-              dark:border-slate-700
-              dark:bg-slate-900
+              dark:border-white/10
+              dark:bg-[#0b0b1f]
             "
           >
             <p className="text-sm text-slate-500">
@@ -273,8 +273,8 @@ export default function ShoppingPage() {
               p-3
               shadow-sm
               sm:p-4
-              dark:border-slate-700
-              dark:bg-slate-900
+              dark:border-white/10
+              dark:bg-[#0b0b1f]
             "
           >
 
