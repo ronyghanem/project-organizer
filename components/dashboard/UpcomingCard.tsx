@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays } from "lucide-react";
-
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/lib/supabase";
 
@@ -26,73 +24,86 @@ export default function UpcomingCard() {
   async function loadInterviews() {
     setLoading(true);
 
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    try {
+      // Check for an active session first.
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
 
-    if (userError) {
-      console.error("Error getting user:", userError);
+      // No session = user is not logged in.
+      if (sessionError) {
+        console.error("Error getting session:", sessionError);
+        setInterviews([]);
+        return;
+      }
+
+      if (!session?.user) {
+        setInterviews([]);
+        return;
+      }
+
+      const user = session.user;
+
+      const { data, error } = await supabase
+        .from("interviews")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) {
+        console.error("Error loading interviews:", error);
+        console.error("Supabase error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+
+        setInterviews([]);
+        return;
+      }
+
+      const now = new Date();
+
+      const upcomingInterviews = (data ?? [])
+        .filter((interview) => {
+          const dateValue =
+            interview.interview_date || interview.date;
+
+          if (!dateValue) {
+            return false;
+          }
+
+          const interviewDate = new Date(dateValue);
+
+          // Only future interviews
+          return (
+            !Number.isNaN(interviewDate.getTime()) &&
+            interviewDate > now
+          );
+        })
+        .sort((a, b) => {
+          const dateA = new Date(
+            a.interview_date || a.date || ""
+          ).getTime();
+
+          const dateB = new Date(
+            b.interview_date || b.date || ""
+          ).getTime();
+
+          return dateA - dateB;
+        })
+        .slice(0, 3);
+
+      setInterviews(upcomingInterviews);
+    } catch (error) {
+      // Prevent AuthSessionMissingError and other errors
+      // from crashing the dashboard.
+      console.error("Error loading upcoming interviews:", error);
       setInterviews([]);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (!user) {
-      setInterviews([]);
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("interviews")
-      .select("*")
-      .eq("user_id", user.id);
-
-    if (error) {
-      console.error("Error loading interviews:", error);
-      console.error("Supabase error details:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code,
-      });
-
-      setInterviews([]);
-      setLoading(false);
-      return;
-    }
-
-    const now = new Date();
-
-    const upcomingInterviews = (data ?? [])
-      .filter((interview) => {
-        const dateValue =
-          interview.interview_date || interview.date;
-
-        if (!dateValue) {
-          return false;
-        }
-
-        const interviewDate = new Date(dateValue);
-
-        return interviewDate > now;
-      })
-      .sort((a, b) => {
-        const dateA = new Date(
-          a.interview_date || a.date || ""
-        ).getTime();
-
-        const dateB = new Date(
-          b.interview_date || b.date || ""
-        ).getTime();
-
-        return dateA - dateB;
-      })
-      .slice(0, 3);
-
-    setInterviews(upcomingInterviews);
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -110,46 +121,28 @@ export default function UpcomingCard() {
   }, []);
 
   return (
-    <section
-      className="
-        rounded-2xl
-        border
-        border-slate-200
-        bg-white
-        p-5
-        shadow-sm
-        dark:border-white/10
-        dark:bg-[#0b0b1f]
-      "
-    >
-      <div className="mb-4 flex items-center gap-2">
-        <CalendarDays
-          size={18}
-          className="text-purple-500"
-        />
+    <section>
+      <div className="mb-4">
+        <h2
+          className="
+            text-lg
+            font-semibold
+            text-slate-900
+            dark:text-white
+          "
+        >
+          {t("upcoming")}
+        </h2>
 
-        <div>
-          <h2
-            className="
-              text-lg
-              font-semibold
-              text-slate-900
-              dark:text-white
-            "
-          >
-            {t("upcoming")}
-          </h2>
-
-          <p
-            className="
-              text-sm
-              text-slate-500
-              dark:text-slate-400
-            "
-          >
-            {t("yourNextItems")}
-          </p>
-        </div>
+        <p
+          className="
+            text-sm
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
+          {t("yourNextItems")}
+        </p>
       </div>
 
       <div className="space-y-3">

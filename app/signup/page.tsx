@@ -24,64 +24,69 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  async function handleSignup(e: React.FormEvent) {
-    e.preventDefault();
+ async function handleSignup(e: React.FormEvent) {
+  e.preventDefault();
 
-    setLoading(true);
-    setError("");
-    setSuccess("");
+  setLoading(true);
+  setError("");
+  setSuccess("");
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      setLoading(false);
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters long.");
+    setLoading(false);
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: name.trim(),
+        },
+      },
+    });
+
+    if (error) {
+      console.error("Signup error:", error);
+
+      if (error.message.toLowerCase().includes("already registered")) {
+        setError(
+          "An account with this email already exists. Please log in."
+        );
+      } else {
+        setError(error.message);
+      }
+
       return;
     }
 
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            full_name: name.trim(),
-          },
-        },
-      });
+    console.log("Signup response:", data);
 
-      if (error) {
-        console.error("Signup error:", error);
-        setError(error.message);
-        return;
-      }
-
-      console.log("Signup response:", data);
-
-      // If email confirmation is enabled in Supabase,
-      // session will normally be null until the user confirms.
-      if (data.user && !data.session) {
-        setSuccess(
-          "Account created! Please check your email to confirm your account."
-        );
-        return;
-      }
-
-      // If email confirmation is disabled,
-      // the user will have an active session immediately.
-      if (data.session) {
-        router.replace("/dashboard");
-        router.refresh();
-        return;
-      }
-
-      setSuccess("Account created successfully!");
-    } catch (err) {
-      console.error("Unexpected signup error:", err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+    // Email confirmation is enabled
+    if (data.user && !data.session) {
+      setSuccess(
+        "Account created! Please check your email to confirm your account."
+      );
+      return;
     }
-  }
 
+    // Email confirmation is disabled
+    if (data.session) {
+      router.replace("/login");
+      router.refresh();
+      return;
+    }
+
+    setSuccess("Account created successfully!");
+  } catch (err) {
+    console.error("Unexpected signup error:", err);
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+}
   return (
     <main className="min-h-screen flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
