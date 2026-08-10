@@ -10,13 +10,6 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/contexts/LanguageContext";
-
-type Task = {
-  id: number;
-  title: string;
-  completed: boolean;
-};
 
 type Event = {
   id: number;
@@ -43,12 +36,8 @@ export default function PlanTodayModal({
   open,
   onClose,
 }: Props) {
-  const { t } = useLanguage();
-
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [interviews, setInterviews] = useState<Interview[]>([]);
-
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -57,6 +46,7 @@ export default function PlanTodayModal({
     loadToday();
   }, [open]);
 
+  // Get today's date as YYYY-MM-DD
   function getToday() {
     const now = new Date();
 
@@ -67,6 +57,25 @@ export default function PlanTodayModal({
     return `${year}-${month}-${day}`;
   }
 
+  // Convert 24-hour time to 12-hour time
+  // 20:00 -> 8 PM
+  // 21:00 -> 9 PM
+  // 22:00 -> 10 PM
+  // 21:30 -> 9:30 PM
+  function formatTime(time: string) {
+    if (!time) return "";
+
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+
+    return date.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: minutes === 0 ? undefined : "2-digit",
+    });
+  }
+
   async function loadToday() {
     setLoading(true);
 
@@ -75,6 +84,8 @@ export default function PlanTodayModal({
     } = await supabase.auth.getUser();
 
     if (!user) {
+      setEvents([]);
+      setInterviews([]);
       setLoading(false);
       return;
     }
@@ -82,36 +93,32 @@ export default function PlanTodayModal({
     const today = getToday();
 
     /*
-     * TODAY'S TASKS
+     * EVENTS
      *
-     * Tasks do not have a date in your current structure,
-     * so we show incomplete tasks here.
+     * Only events scheduled for today.
+     *
+     * Events from yesterday or earlier
+     * will not appear.
      */
-    const { data: tasksData, error: tasksError } =
-      await supabase
-        .from("tasks")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("completed", false)
-        .order("created_at", {
-          ascending: false,
-        });
+    const {
+      data: eventsData,
+      error: eventsError,
+    } = await supabase
+      .from("events")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("date", today)
+      .order("time", {
+        ascending: true,
+      });
 
     /*
-     * TODAY'S EVENTS ONLY
-     */
-    const { data: eventsData, error: eventsError } =
-      await supabase
-        .from("events")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("date", today)
-        .order("time", {
-          ascending: true,
-        });
-
-    /*
-     * TODAY'S INTERVIEWS ONLY
+     * INTERVIEWS
+     *
+     * Only interviews scheduled for today.
+     *
+     * Interviews from previous dates
+     * will not appear.
      */
     const {
       data: interviewsData,
@@ -125,22 +132,20 @@ export default function PlanTodayModal({
         ascending: true,
       });
 
-    if (tasksError) {
-      console.error("Tasks error:", tasksError);
-    }
-
     if (eventsError) {
-      console.error("Events error:", eventsError);
+      console.error(
+        "Error loading today's events:",
+        eventsError
+      );
     }
 
     if (interviewsError) {
       console.error(
-        "Interviews error:",
+        "Error loading today's interviews:",
         interviewsError
       );
     }
 
-    setTasks(tasksData || []);
     setEvents(eventsData || []);
     setInterviews(interviewsData || []);
 
@@ -150,9 +155,7 @@ export default function PlanTodayModal({
   if (!open) return null;
 
   const totalPlans =
-    tasks.length +
-    events.length +
-    interviews.length;
+    events.length + interviews.length;
 
   const today = new Date();
 
@@ -170,22 +173,26 @@ export default function PlanTodayModal({
       className="
         fixed
         inset-0
-        z-50
+        z-[99999]
         flex
-        items-center
+        items-start
         justify-center
-        bg-slate-950/40
-        p-4
+        overflow-y-auto
+        bg-black/50
+        p-3
+        pt-4
         backdrop-blur-sm
+        sm:items-center
+        sm:p-6
       "
       onClick={onClose}
     >
+      {/* Modal */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="
           relative
           flex
-          max-h-[90vh]
           w-full
           max-w-2xl
           flex-col
@@ -193,75 +200,51 @@ export default function PlanTodayModal({
           rounded-3xl
           border
           border-white/30
-          bg-white/90
+          bg-white
           shadow-2xl
-          backdrop-blur-2xl
           dark:border-white/10
-          dark:bg-slate-900/90
+          dark:bg-slate-900
+          sm:max-h-[90vh]
         "
       >
         {/* Header */}
         <div
           className="
             flex
-            items-start
+            shrink-0
+            items-center
             justify-between
             border-b
-            border-slate-200/70
-            p-5
-            sm:p-6
+            border-slate-200
+            px-5
+            py-4
             dark:border-white/10
+            sm:px-6
+            sm:py-5
           "
         >
           <div>
-            <div
+            <h2
               className="
-                flex
-                items-center
-                gap-3
+                text-xl
+                font-bold
+                text-slate-900
+                dark:text-white
               "
             >
-              <div
-                className="
-                  flex
-                  h-11
-                  w-11
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-indigo-50
-                  text-indigo-600
-                  dark:bg-indigo-500/10
-                  dark:text-indigo-400
-                "
-              >
-                <CalendarDays size={22} />
-              </div>
+              Plan Today
+            </h2>
 
-              <div>
-                <h2
-                  className="
-                    text-xl
-                    font-bold
-                    text-slate-900
-                    dark:text-white
-                  "
-                >
-                  Plan Today
-                </h2>
-
-                <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-slate-500
-                    dark:text-slate-400
-                  "
-                >
-                  {formattedDate}
-                </p>
-              </div>
-            </div>
+            <p
+              className="
+                mt-1
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
+              {formattedDate}
+            </p>
           </div>
 
           <button
@@ -271,6 +254,7 @@ export default function PlanTodayModal({
               flex
               h-9
               w-9
+              shrink-0
               items-center
               justify-center
               rounded-xl
@@ -290,22 +274,14 @@ export default function PlanTodayModal({
         <div
           className="
             overflow-y-auto
-            p-5
-            sm:p-6
+            px-5
+            py-5
+            sm:px-6
+            sm:py-6
           "
         >
           {loading ? (
             <div className="space-y-3">
-              <div
-                className="
-                  h-20
-                  animate-pulse
-                  rounded-2xl
-                  bg-slate-200
-                  dark:bg-slate-800
-                "
-              />
-
               <div
                 className="
                   h-20
@@ -386,6 +362,7 @@ export default function PlanTodayModal({
             </div>
           ) : (
             <div className="space-y-6">
+
               {/* Interviews */}
               {interviews.length > 0 && (
                 <section>
@@ -417,56 +394,57 @@ export default function PlanTodayModal({
                   </div>
 
                   <div className="space-y-3">
-                    {interviews.map(
-                      (interview) => (
+                    {interviews.map((interview) => (
+                      <div
+                        key={interview.id}
+                        className="
+                          rounded-2xl
+                          border
+                          border-green-200
+                          bg-green-50/70
+                          p-4
+                          transition-all
+                          hover:-translate-y-0.5
+                          hover:shadow-md
+                          dark:border-green-500/20
+                          dark:bg-green-500/10
+                        "
+                      >
                         <div
-                          key={interview.id}
                           className="
-                            rounded-2xl
-                            border
-                            border-green-200
-                            bg-green-50/70
-                            p-4
-                            transition-all
-                            hover:-translate-y-0.5
-                            hover:shadow-md
-                            dark:border-green-500/20
-                            dark:bg-green-500/10
+                            flex
+                            items-start
+                            justify-between
+                            gap-3
                           "
                         >
-                          <div
-                            className="
-                              flex
-                              items-start
-                              justify-between
-                              gap-3
-                            "
-                          >
-                            <div>
-                              <h4
-                                className="
-                                  font-semibold
-                                  text-slate-900
-                                  dark:text-white
-                                "
-                              >
-                                {interview.company}
-                              </h4>
+                          <div className="min-w-0">
+                            <h4
+                              className="
+                                font-semibold
+                                text-slate-900
+                                dark:text-white
+                              "
+                            >
+                              {interview.company}
+                            </h4>
 
-                              <p
-                                className="
-                                  mt-1
-                                  text-sm
-                                  text-slate-600
-                                  dark:text-slate-300
-                                "
-                              >
-                                {interview.position}
-                              </p>
-                            </div>
+                            <p
+                              className="
+                                mt-1
+                                text-sm
+                                text-slate-600
+                                dark:text-slate-300
+                              "
+                            >
+                              {interview.position}
+                            </p>
+                          </div>
 
+                          {interview.status && (
                             <span
                               className="
+                                shrink-0
                                 rounded-full
                                 bg-green-100
                                 px-2.5
@@ -480,28 +458,28 @@ export default function PlanTodayModal({
                             >
                               {interview.status}
                             </span>
-                          </div>
-
-                          {interview.notes && (
-                            <p
-                              className="
-                                mt-3
-                                text-sm
-                                text-slate-500
-                                dark:text-slate-400
-                              "
-                            >
-                              {interview.notes}
-                            </p>
                           )}
                         </div>
-                      )
-                    )}
+
+                        {interview.notes && (
+                          <p
+                            className="
+                              mt-3
+                              text-sm
+                              text-slate-500
+                              dark:text-slate-400
+                            "
+                          >
+                            {interview.notes}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </section>
               )}
 
-              {/* Events */}
+              {/* Calendar Events */}
               {events.length > 0 && (
                 <section>
                   <div
@@ -527,7 +505,7 @@ export default function PlanTodayModal({
                         dark:text-white
                       "
                     >
-                      Events Today
+                      Calendar Today
                     </h3>
                   </div>
 
@@ -551,10 +529,12 @@ export default function PlanTodayModal({
                           dark:bg-indigo-500/10
                         "
                       >
+                        {/* Time */}
                         <div
                           className="
                             flex
-                            min-w-[70px]
+                            min-w-[76px]
+                            shrink-0
                             items-center
                             justify-center
                             gap-1.5
@@ -572,9 +552,10 @@ export default function PlanTodayModal({
                         >
                           <Clock size={15} />
 
-                          {event.time}
+                          {formatTime(event.time)}
                         </div>
 
+                        {/* Event title */}
                         <div className="min-w-0">
                           <h4
                             className="
@@ -593,75 +574,6 @@ export default function PlanTodayModal({
                 </section>
               )}
 
-              {/* Tasks */}
-              {tasks.length > 0 && (
-                <section>
-                  <div
-                    className="
-                      mb-3
-                      flex
-                      items-center
-                      gap-2
-                    "
-                  >
-                    <CheckCircle2
-                      size={18}
-                      className="
-                        text-blue-600
-                        dark:text-blue-400
-                      "
-                    />
-
-                    <h3
-                      className="
-                        font-semibold
-                        text-slate-900
-                        dark:text-white
-                      "
-                    >
-                      Tasks
-                    </h3>
-                  </div>
-
-                  <div className="space-y-2">
-                    {tasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className="
-                          flex
-                          items-center
-                          gap-3
-                          rounded-2xl
-                          border
-                          border-slate-200
-                          bg-white/60
-                          p-3
-                          dark:border-white/10
-                          dark:bg-slate-800/60
-                        "
-                      >
-                        <CheckCircle2
-                          size={18}
-                          className="
-                            shrink-0
-                            text-slate-400
-                          "
-                        />
-
-                        <span
-                          className="
-                            text-sm
-                            text-slate-700
-                            dark:text-slate-200
-                          "
-                        >
-                          {task.title}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
             </div>
           )}
         </div>
@@ -669,8 +581,9 @@ export default function PlanTodayModal({
         {/* Footer */}
         <div
           className="
+            shrink-0
             border-t
-            border-slate-200/70
+            border-slate-200
             p-4
             dark:border-white/10
           "

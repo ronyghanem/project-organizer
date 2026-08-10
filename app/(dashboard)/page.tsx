@@ -6,10 +6,10 @@ import Header from "@/components/dashboard/Header";
 import StatsCard from "@/components/dashboard/StatsCard";
 import UpcomingCard from "@/components/dashboard/UpcomingCard";
 import QuickActions from "@/components/dashboard/QuickActions";
-import ShoppingPreview from "@/components/dashboard/ShoppingPreview";
-import TaskPreview from "@/components/dashboard/TaskPreview";
-import RecentNotes from "@/components/dashboard/RecentNotes";
+
 import QuickAddModal from "@/components/dashboard/QuickAddModal";
+import QuickNoteModal from "@/components/dashboard/QuickNoteModal";
+import QuickShoppingModal from "@/components/dashboard/QuickShoppingModal";
 import PlanTodayModal from "@/components/dashboard/PlanTodayModal";
 
 import {
@@ -26,6 +26,9 @@ export default function Home() {
   const { t } = useLanguage();
 
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [quickNoteOpen, setQuickNoteOpen] = useState(false);
+  const [quickShoppingOpen, setQuickShoppingOpen] =
+    useState(false);
   const [planTodayOpen, setPlanTodayOpen] = useState(false);
 
   const [stats, setStats] = useState({
@@ -51,52 +54,68 @@ export default function Home() {
       return;
     }
 
-    const { count: tasksCount, error: tasksError } = await supabase
-      .from("tasks")
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("user_id", user.id);
+    const { count: tasksCount, error: tasksError } =
+      await supabase
+        .from("tasks")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
 
-    const { count: eventsCount, error: eventsError } = await supabase
-      .from("events")
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("user_id", user.id);
+    const { count: eventsCount, error: eventsError } =
+      await supabase
+        .from("events")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
 
-    const { count: shoppingCount, error: shoppingError } = await supabase
-      .from("shopping_items")
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("user_id", user.id);
+    const { count: shoppingCount, error: shoppingError } =
+      await supabase
+        .from("shopping_items")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
 
-    const { count: interviewsCount, error: interviewsError } = await supabase
-      .from("interviews")
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("user_id", user.id);
+    const { count: interviewsCount, error: interviewsError } =
+      await supabase
+        .from("interviews")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("user_id", user.id);
 
     if (tasksError) {
-      console.error("Error loading tasks count:", tasksError);
+      console.error(
+        "Error loading tasks count:",
+        tasksError
+      );
     }
 
     if (eventsError) {
-      console.error("Error loading events count:", eventsError);
+      console.error(
+        "Error loading events count:",
+        eventsError
+      );
     }
 
     if (shoppingError) {
-      console.error("Error loading shopping count:", shoppingError);
+      console.error(
+        "Error loading shopping count:",
+        shoppingError
+      );
     }
 
     if (interviewsError) {
-      console.error("Error loading interviews count:", interviewsError);
+      console.error(
+        "Error loading interviews count:",
+        interviewsError
+      );
     }
 
     setStats({
@@ -107,12 +126,12 @@ export default function Home() {
     });
   }, []);
 
-  // Load stats when the dashboard opens
+  // Load stats when dashboard opens
   useEffect(() => {
     loadStats();
   }, [loadStats]);
 
-  // Reload stats when returning to the dashboard
+  // Reload stats when returning to dashboard
   useEffect(() => {
     const handleFocus = () => {
       loadStats();
@@ -126,23 +145,9 @@ export default function Home() {
   }, [loadStats]);
 
   return (
-    <main className="relative min-h-screen">
-      {/* Background glow - Light mode */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          right-[-120px]
-          top-1/3
-          h-80
-          w-80
-          rounded-full
-          bg-purple-300/20
-          blur-3xl
-          dark:bg-purple-500/10
-        "
-      />
+    <main className="relative min-h-full">
 
+      {/* Background glow */}
       <div
         className="
           pointer-events-none
@@ -159,6 +164,7 @@ export default function Home() {
       />
 
       <div className="relative z-10 space-y-6">
+
         {/* Header */}
         <div
           className="
@@ -198,7 +204,12 @@ export default function Home() {
             value={String(stats.tasks)}
             detail={t("totalTasks")}
             icon={CheckCircle2}
-            accent="bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+            accent="
+              bg-blue-50
+              text-blue-600
+              dark:bg-blue-500/10
+              dark:text-blue-400
+            "
           />
 
           <StatsCard
@@ -206,7 +217,12 @@ export default function Home() {
             value={String(stats.events)}
             detail={t("upcomingEvents")}
             icon={CalendarDays}
-            accent="bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400"
+            accent="
+              bg-purple-50
+              text-purple-600
+              dark:bg-purple-500/10
+              dark:text-purple-400
+            "
           />
 
           <StatsCard
@@ -214,7 +230,12 @@ export default function Home() {
             value={String(stats.shopping)}
             detail={t("itemsRemaining")}
             icon={ShoppingCart}
-            accent="bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"
+            accent="
+              bg-amber-50
+              text-amber-600
+              dark:bg-amber-500/10
+              dark:text-amber-400
+            "
           />
 
           <StatsCard
@@ -222,7 +243,12 @@ export default function Home() {
             value={String(stats.interviews)}
             detail={t("applications")}
             icon={BriefcaseBusiness}
-            accent="bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
+            accent="
+              bg-green-50
+              text-green-600
+              dark:bg-green-500/10
+              dark:text-green-400
+            "
           />
         </section>
 
@@ -235,6 +261,7 @@ export default function Home() {
             lg:grid-cols-2
           "
         >
+
           {/* Quick Actions */}
           <div
             className="
@@ -255,7 +282,15 @@ export default function Home() {
             "
           >
             <QuickActions
-              onTaskAction={() => setQuickAddOpen(true)}
+              onTaskAction={() =>
+                setQuickAddOpen(true)
+              }
+              onNoteAction={() =>
+                setQuickNoteOpen(true)
+              }
+              onShoppingAction={() =>
+                setQuickShoppingOpen(true)
+              }
             />
           </div>
 
@@ -281,84 +316,40 @@ export default function Home() {
             <UpcomingCard />
           </div>
 
-          {/* Shopping */}
-          <div
-            className="
-              rounded-3xl
-              border
-              border-white/60
-              bg-white/70
-              p-4
-              shadow-sm
-              backdrop-blur-xl
-              transition-all
-              duration-300
-              hover:shadow-lg
-              sm:p-5
-              dark:border-white/10
-              dark:bg-white/[0.05]
-              dark:shadow-black/20
-            "
-          >
-            <ShoppingPreview />
-          </div>
-
-          {/* Tasks */}
-          <div
-            className="
-              rounded-3xl
-              border
-              border-white/60
-              bg-white/70
-              p-4
-              shadow-sm
-              backdrop-blur-xl
-              transition-all
-              duration-300
-              hover:shadow-lg
-              sm:p-5
-              dark:border-white/10
-              dark:bg-white/[0.05]
-              dark:shadow-black/20
-            "
-          >
-            <TaskPreview />
-          </div>
-
-          {/* Notes */}
-          <div
-            className="
-              rounded-3xl
-              border
-              border-white/60
-              bg-white/70
-              p-4
-              shadow-sm
-              backdrop-blur-xl
-              transition-all
-              duration-300
-              hover:shadow-lg
-              sm:p-5
-              lg:col-span-2
-              dark:border-white/10
-              dark:bg-white/[0.05]
-              dark:shadow-black/20
-            "
-          >
-            <RecentNotes />
-          </div>
         </section>
       </div>
 
       {/* Modals */}
+
       <QuickAddModal
         open={quickAddOpen}
-        onClose={() => setQuickAddOpen(false)}
+        onClose={() =>
+          setQuickAddOpen(false)
+        }
+        onTaskAdded={loadStats}
+      />
+
+      <QuickNoteModal
+        open={quickNoteOpen}
+        onClose={() =>
+          setQuickNoteOpen(false)
+        }
+        onNoteAdded={loadStats}
+      />
+
+      <QuickShoppingModal
+        open={quickShoppingOpen}
+        onClose={() =>
+          setQuickShoppingOpen(false)
+        }
+        onShoppingAdded={loadStats}
       />
 
       <PlanTodayModal
         open={planTodayOpen}
-        onClose={() => setPlanTodayOpen(false)}
+        onClose={() =>
+          setPlanTodayOpen(false)
+        }
       />
     </main>
   );
